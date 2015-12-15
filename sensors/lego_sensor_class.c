@@ -2,6 +2,7 @@
  * LEGO sensor device class
  *
  * Copyright (C) 2013-2015 David Lechner <david@lechnology.com>
+ * Copyright (C) 2015      Ralph Hempel <rhempel@hempeldesigngroup.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -47,14 +48,19 @@
  * incremented each time a sensor is loaded (it is not related to which port
  * the sensor is plugged in to).
  * .
- * `bin_data` (read-only)
- * : Reading the file will give the unscaled raw values in the `value<N>`
- *   attributes. Use `bin_data_format`, `num_values` and the individual sensor
- *   documentation to determine how to interpret the data.
+ * `address`
+ * : (read-only) Returns the name of the port that the sensor is connected to,
+ *   e.g. `in1`. I2C sensors also include the I2C address (decimal), e.g.
+ *   `in1:i2c8`.
  * .
- * `bin_data_format` (read-only)
- * : Returns the format of the values in `bin_data` for the current mode.
- *   Possible values are:
+ * `bin_data`
+ * : (read-only) Reading the file will give the unscaled raw values in the
+ *   `value<N>` attributes. Use `bin_data_format`, `num_values` and the
+ *   individual sensor documentation to determine how to interpret the data.
+ * .
+ * `bin_data_format`
+ * : (read-only) Returns the format of the values in `bin_data` for the current
+ *   mode. Possible values are:
  * .
  * .    - `u8`: Unsigned 8-bit integer (byte)
  * .    - `s8`: Signed 8-bit integer (sbyte)
@@ -64,63 +70,67 @@
  * .    - `s32`: Signed 32-bit integer (int)
  * .    - `float`: IEEE 754 32-bit floating point (float)
  * .
- * `command` (write-only)
- * : Sends a command to the sensor.
+ * `command`
+ * : (write-only) Sends a command to the sensor. See the individual sensor
+ *   documentation for possible commands. Sensors that do not support commands
+ *   will return `-EOPNOTSUPP` when writing to this attribute.
  * .
- * `commands` (read-only)
- * : Returns a space separated list of the valid commands for the sensor.
- *   Returns -EOPNOTSUPP if no commands are supported.
+ * `commands`
+ * : (read-only) Returns a space separated list of the valid commands for the
+ *   sensor. Returns `-EOPNOTSUPP` if no commands are supported.
  * .
- * `direct` (read/write)
- * : Allows direct communication with the sensor for using advanced features
- *   that are not otherwise available through the lego-sensor class. Returns
- *   `-EOPNOTSUPP` if the sensor does not support this. Currently this only
- *   works with I2C sensors. For I2C sensors, use `seek()` to set the register
+ * `direct`
+ * : (read/write) Allows direct communication with the sensor for using advanced
+ *   features that are not otherwise available through the lego-sensor class.
+ *   Returns `-EOPNOTSUPP` if the sensor does not support this. Currently this
+ *   only works with I2C sensors. For I2C sensors, use `seek()` to set the register
  *   to read or write from, then read or write the number of bytes required.
  * .
- * `decimals` (read-only)
- * : Returns the number of decimal places for the values in the `value<N>`
- *   attributes of the current mode.
+ * `decimals`
+ * : (read-only) Returns the number of decimal places for the values in the
+ *   `value<N>` attributes of the current mode.
  * .
- * `driver_name` (read-only)
- * : Returns the name of the sensor device/driver. See the list of [supported
- *   sensors] for a complete list of drivers.
+ * `driver_name`
+ * : (read-only) Returns the name of the sensor device/driver. See the list of
+ *   [supported sensors] for a complete list of drivers.
  * .
- * `fw_version` (read-only)
- * : Returns the firmware version of the sensor if available. Currently only
- *   NXT/I2C sensors support this.
+ * `fw_version`
+ * : (read-only) Returns the firmware version of the sensor if available.
+ *   Currently only NXT/I2C sensors support this.
  * .
- * `mode` (read/write)
- * : Returns the current mode. Writing one of the values returned by `modes`
- *   sets the sensor to that mode.
+ * `mode`
+ * : (read/write) Returns the current mode. Writing one of the values returned
+ *   by `modes` sets the sensor to that mode. See the individual sensor
+ *   documentation for a description of the modes available for each type of
+ *   sensor.
  * .
- * `modes` (read-only)
- * : Returns a space separated list of the valid modes for the sensor.
+ * `modes`
+ * : (read-only) Returns a space separated list of the valid modes for the sensor.
  * .
- * `num_values` (read-only)
- * : Returns the number of `value<N>` attributes that will return a valid value
- *   for the current mode.
+ * `num_values`
+ * : (read-only) Returns the number of `value<N>` attributes that will return
+ *   a valid value for the current mode.
  * .
- * `poll_ms` (read/write)
- * : Returns the polling period of the sensor in milliseconds. Writing sets the
- *   polling period. Setting to 0 disables polling. Returns -EOPNOTSUPP if
- *   changing polling is not supported. Note: Setting poll_ms too low can cause
- *   the input port autodetection to fail. If this happens, use the `mode`
- *   attribute of the port to force the port to nxt-i2c mode.
+ * `poll_ms`
+ * : (read/write) Returns the polling period of the sensor in milliseconds.
+ *   Writing sets the polling period. Setting to 0 disables polling. Returns
+ *   `-EOPNOTSUPP` if changing polling is not supported. Note: Setting `poll_ms`
+ *   too high can cause the input port autodetection to fail. If this happens,
+ *   use the `mode` attribute of the port to force the port to nxt-i2c mode.
  * .
- * `address` (read-only)
- * : Returns the name of the port that the sensor is connected to, e.g. `in1`.
- *   I2C sensors also include the I2C address (decimal), e.g. `in1:i2c8`.
+ * `units`
+ * : (read-only) Returns the units of the measured value for the current mode.
+ *   May return empty string if units are unknown.
  * .
- * `units` (read-only)
- * : Returns the units of the measured value for the current mode. May return
- *   empty string"
+ * `value<N>`
+ * : (read-only) Returns the value or values measured by the sensor. Check
+ *   `num_values` to see how many values there are. Values with N >= num_values
+ *   will return an error. The values are fixed point numbers, so check
+ *   `decimals` to see if you need to divide to get the actual value.
  * .
- * `value<N>` (read-only)
- * : Returns the value or values measured by the sensor. Check `num_values` to
- *   see how many values there are. Values with N >= num_values will return an
- *   error. The values are fixed point numbers, so check `decimals` to see if
- *   you need to divide to get the actual value.
+ * `text_value`
+ * : (read-only) Returns a space delimited string representing sensor-specific
+ *   text values. Returns `-EOPNOTSUPP` if a sensor does not support text values.
  * .
  * ### Events
  * .
@@ -511,6 +521,24 @@ static ssize_t fw_version_show(struct device *dev, struct device_attribute *attr
 	return snprintf(buf, LEGO_SENSOR_FW_VERSION_SIZE + 2, "%s\n", sensor->fw_version);
 }
 
+static ssize_t text_value_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+{
+	struct lego_sensor_device *sensor = to_lego_sensor_device(dev);
+	const char *value;
+ 
+	if (!sensor->get_text_value)
+		return -EOPNOTSUPP;
+ 
+	value = sensor->get_text_value(sensor->context);
+
+	if(IS_ERR(value))
+		return PTR_ERR(value);
+
+	return snprintf(buf, PAGE_SIZE, "%s\n", value);
+}
+
+
 static ssize_t bin_data_read(struct file *file, struct kobject *kobj,
 			     struct bin_attribute *attr,
 			     char *buf, loff_t off, size_t count)
@@ -567,6 +595,7 @@ static DEVICE_ATTR_RO(units);
 static DEVICE_ATTR_RO(decimals);
 static DEVICE_ATTR_RO(num_values);
 static DEVICE_ATTR_RO(bin_data_format);
+static DEVICE_ATTR_RO(text_value);
 /*
  * Technically, it is possible to have 32 8-bit values from UART sensors
  * and >200 8-bit values from I2C sensors, but known UART sensors so far
@@ -596,6 +625,7 @@ static struct attribute *lego_sensor_class_attrs[] = {
 	&dev_attr_decimals.attr,
 	&dev_attr_num_values.attr,
 	&dev_attr_bin_data_format.attr,
+	&dev_attr_text_value.attr,
 	&dev_attr_value0.attr,
 	&dev_attr_value1.attr,
 	&dev_attr_value2.attr,
