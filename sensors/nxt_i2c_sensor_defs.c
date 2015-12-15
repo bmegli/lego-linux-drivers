@@ -290,7 +290,10 @@ static void mi_xg1300l_remove_cb(struct nxt_i2c_sensor_data *data)
  *
  * When adding sensors, also add a driver name with the proper type id to
  * nxt_i2c_sensor_id_table in nxt_i2c_sensor_core.c so that the sensor can
- * be manually initialized.
+ * be manually initialized. To do it you should:
+ * - add sensor type to enumeration nxt_i2c_sensor_type in nxt_i2c_sensor.h
+ * - define name for the sensor in nxt_i2c_sensor.h
+ * - add line to NXT_I2C_SENSOR_ID_TABLE_DATA in nxt_i2c_sensor.h
  *
  * Documentation is automatically generated from this struct, so formatting is
  * very important. Make sure any new sensors have the same layout. The comments
@@ -2897,6 +2900,261 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 			},
 		},
 	},
+	[DI_DGPS] = {
+		/**
+		 * [^ids]: Dexter Industries dGPS doesn't follow LEGO guidelines by
+		 * returning vendor, product and firmware version values. As a
+		 * result, this sensor can't be automatically detected. Until
+		 * we find another way to identify the sensor, the driver has to
+		 * be loaded manually.
+		 *
+		 * Register I2C device:
+		 * <pre>
+		 * echo di-dgps 0x03 > /sys/bus/i2c/devices/i2c-<port+2>/new_device
+		 * </pre>
+		 *
+		 * @vendor_name: Dexter Industries
+		 * @vendor_part_number:
+		 * @vendor_part_name: dGPS for Lego Mindstorms NXT EV3
+		 * @vendor_website: http://www.dexterindustries.com/shop/dgps/
+		 * @default_address: 0x03
+		 * @vendor_id_footnote: [^ids]
+		 * @product_id_footnote: [^ids]
+		 */
+		.name		= DI_DGPS_NAME,
+		.vendor_id	= "dexind", /* The sensor doesn't return vendor_id, it can't be autodetected this way */
+		.product_id	= "dgps",  /* The sensor doesn't return product_id, it can't be autodetected this way */
+		.num_modes	= 12,
+		.mode_info	= (const struct lego_sensor_mode_info[]) {
+			[0] = {
+				/**
+				 * @description: Time in UTC
+				 * @value0: hhmmss
+				 * @units_description: hours, minutes, seconds
+				 */
+				.name		= "TIME",
+				.data_sets	= 1,
+				.data_type	= LEGO_SENSOR_DATA_U32,
+				.units		= "hms",
+				.decimals	= 0,
+			},
+			[1] = {
+				/**
+				 * @description: GPS status
+				 * @value0: connection status (0/1)
+				 * @units_description: no/yes
+				 */
+				.name		= "STATUS",
+				.data_sets	= 1,
+				.data_type	= LEGO_SENSOR_DATA_U8,
+				.decimals	= 0,
+				.units		= "0/1",
+			},
+			[2] = {
+				/**
+				 *[^integer-latitude-units]: to do
+				 *
+				 * @description: Latitude
+				 * @value0: Integer Latitude (-90000000 to 90000000)
+				 * @units_description: integer degrees 
+				 * @units_footnote: [^integer-latitude-units]
+				 */
+				.name		= "LATITUDE",
+				.data_sets	= 1,
+				.units		= "deg",
+				.data_type	= LEGO_SENSOR_DATA_S32,
+				.decimals	= 0, //to do
+			},
+			[3] = {
+				/**
+				 *[^integer-longitude-units]: to do
+				 *
+				 * @description: Longitude
+				 * @value0: Integer longitude (-180000000 to 180000000)
+				 * @units_description: integer degrees 
+				 * @units_footnote: [^integer-longitude-units]				 	
+				 */
+				.name		= "LONGITUDE",
+				.data_sets	= 1,
+				.units		= "deg",
+				.data_type	= LEGO_SENSOR_DATA_S32,
+				.decimals	= 0, //to do
+			},
+			[4] = {
+				/**				
+				 *
+				 * @description: Velocity
+				 * @value0: Velocity
+				 * @units_description: centimeters per second							 	
+				 */
+				.name		= "VELOCITY",
+				.data_sets	= 1,
+				.units		= "c/s",
+				.data_type	= LEGO_SENSOR_DATA_U32,
+				.decimals	= 0, //to check
+			},
+			[5] = {
+				/**				
+				 *
+				 * @description: Heading
+				 * @value0: Heading (range to check)
+				 * @units_description: degrees							 	
+				 */
+				.name		= "HEADING",
+				.data_sets	= 1,
+				.units		= "deg",
+				.data_type	= LEGO_SENSOR_DATA_U16, //to check!
+				.decimals	= 0, //to check!
+			},
+			[6] = {
+				/**				
+				 *
+				 * @description: Destination distance
+				 * @value0: distance to destination
+				 * @units_description: meters					 	
+				 */
+				.name		= "DST-DIST",
+				.data_sets	= 1,
+				.units		= "m",
+				.data_type	= LEGO_SENSOR_DATA_U32, //to check!
+				.decimals	= 0, //to check!
+			},						
+			[7] = {
+				/**				
+				 *
+				 * @description: Destination angle
+				 * @value0: angle to destination
+				 * @units_description: degrees				 	
+				 */
+				.name		= "DST-ANG",
+				.data_sets	= 1,
+				.units		= "deg",
+				.data_type	= LEGO_SENSOR_DATA_S16, //to check!
+				.decimals	= 0, //to check!
+			},						
+			[8] = {
+				/**				
+				 *[^travelled-angle-units]: to do
+				 * 
+				 * @description: Angle travelled since last request
+				 * @value0: angle traveled
+				 * @units_description: degrees
+				 * @units_footnote: [^travelled-angle-units]			 	
+				 */
+				.name		= "TRV-ANG",
+				.data_sets	= 1,
+				.units		= "deg",
+				.data_type	= LEGO_SENSOR_DATA_S16, //to check!
+				.decimals	= 0, //to check!
+			},						
+			[9] = {
+				/**				
+				 *[^extended-modes]: to do - extended mode only
+				 * 
+				 * @description: Altitude
+				 * @value0: altitude (only in extended mode)
+				 * @value0_footnote: [^extended-modes]
+				 * @units_description: meters
+				 */
+				.name		= "EXT-ALT",
+				.data_sets	= 1,
+				.units		= "m",
+				.data_type	= LEGO_SENSOR_DATA_S32, //to check!
+				.decimals	= 0, //to check!
+			},						
+			[10] = {
+				/**								  
+				 * 
+				 * @description: HDOP
+				 * @value0: hdop (only in extended mode)
+				 * @value0_footnote: [^extended-modes]			
+				 */
+				.name		= "EXT-HDOP",
+				.data_sets	= 1,				
+				.data_type	= LEGO_SENSOR_DATA_U32, //to check!
+			},						
+			[11] = {
+				/**								  
+				 * 
+				 * @description: Sattelites in Vew
+				 * @value0: sats in view (only in extended mode)
+				 * @value0_footnote: [^extended-modes]			
+				 */
+				.name		= "EXT-SATS",
+				.data_sets	= 1,				
+				.data_type	= LEGO_SENSOR_DATA_U32, //to check!				
+			},						
+			
+		},
+		.i2c_mode_info	= (const struct nxt_i2c_sensor_mode_info[]) {
+			[0] = {
+				.read_data_reg	= 0x00,
+			},
+			[1] = {
+				.read_data_reg	= 0x01,
+			},
+			[2] = {
+				.read_data_reg	= 0x02,
+			},
+			[3] = {
+				.read_data_reg	= 0x04,
+			},
+			[4] = {
+				.read_data_reg	= 0x06,
+			},
+			[5] = {
+				.read_data_reg	= 0x07,
+			},
+			[6] = {
+				.read_data_reg	= 0x08,
+			},
+			[7] = {
+				.read_data_reg	= 0x09,
+			},
+			[8] = {
+				.read_data_reg	= 0x0a,
+			},
+			[9] = {
+				.read_data_reg	= 0x0e,
+			},
+			[10] = {
+				.read_data_reg	= 0x0f,
+			},
+			[11] = {
+				.read_data_reg	= 0x10,
+			},			
+		},
+		.num_commands	= 2,
+		.cmd_info	= (const struct lego_sensor_cmd_info[]) {
+			[0] = {
+				/**
+				 * [^extended-firmware-description]: dGPS-X Extended Firmware blah blah blah
+				 *
+				 * @description: Extended Firmware Off
+				 * @name_footnote: [^extended-firmware-description]
+				 */
+				.name		= "EXT-OFF",
+			},
+			[1] = {
+				/**
+				 * @description: Extended Firmware On
+				 * @name_footnote: [^extended-firmware-description]
+				 */
+				.name		= "EXT-ON",
+			},
+		},
+		.i2c_cmd_info	= (const struct nxt_i2c_sensor_cmd_info[]) {
+			[0] = {
+				.cmd_reg	= 0x0d,
+				.cmd_data	= 0x00,
+			},
+			[1] = {
+				.cmd_reg	= 0x0d,
+				.cmd_data	= 0x01,
+			},
+
+		},
+	},	
 };
 
 EXPORT_SYMBOL_GPL(nxt_i2c_sensor_defs);
