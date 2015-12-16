@@ -3089,63 +3089,39 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 		.i2c_mode_info	= (const struct nxt_i2c_sensor_mode_info[]) {
 			[0] = {
 				.read_data_reg	= 0x00,
-				.set_mode_reg = 0x00,
-				.set_mode_data = 0x00,
 			},
 			[1] = {
 				.read_data_reg	= 0x01,
-				.set_mode_reg = 0x01,
-				.set_mode_data = 0x01,				
 			},
 			[2] = {
 				.read_data_reg	= 0x02,
-				.set_mode_reg = 0x02,
-				.set_mode_data = 0x02,				
 			},
 			[3] = {
 				.read_data_reg	= 0x04,
-				.set_mode_reg = 0x04,
-				.set_mode_data = 0x04,				
 			},
 			[4] = {
 				.read_data_reg	= 0x06,
-				.set_mode_reg = 0x06,
-				.set_mode_data = 0x06,				
 			},
 			[5] = {
 				.read_data_reg	= 0x07,
-				.set_mode_reg = 0x07,
-				.set_mode_data = 0x07,				
 			},
 			[6] = {
 				.read_data_reg	= 0x08,
-				.set_mode_reg = 0x08,
-				.set_mode_data = 0x08,				
 			},
 			[7] = {
 				.read_data_reg	= 0x09,
-				.set_mode_reg = 0x09,
-				.set_mode_data = 0x09,				
 			},
 			[8] = {
 				.read_data_reg	= 0x0a,
-				.set_mode_reg = 0x0a,
-				.set_mode_data = 0x0a,				
 			},
 			[9] = {
 				.read_data_reg	= 0x0e,
-				.set_mode_reg = 0x0e,
-				.set_mode_data = 0x0e,				
 			},
 			[10] = {
 				.read_data_reg	= 0x0f,
-				.set_mode_reg = 0x0f,
-				.set_mode_data = 0x0f,				
 			},
 			[11] = {
 				.read_data_reg	= 0x10,
-				.set_mode_reg = 0x10,
-				.set_mode_data = 0x10,				
 			},			
 		},
 		.num_commands	= 2,
