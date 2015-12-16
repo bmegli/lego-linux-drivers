@@ -183,8 +183,8 @@ enum nxt_i2c_sensor_type {
 #define MS_NXTCAM_NAME				"ms-nxtcam"
 #define MS_PIXYADAPTER_NAME			"ms-pixy-adapter"
 #define MI_CRUIZCORE_XG1300L_NAME		"mi-xg1300l"
-#define DI_DGPS_NAME				"di-dgps"
 #define PX_PIXY_NAME				"pixy-lego"
+#define DI_DGPS_NAME				"di-dgps"
 
 /*
  * This table is shared by the nxt-i2c-sensor and ht-nxt-smux-i2c-sensor modules.
@@ -214,8 +214,8 @@ enum nxt_i2c_sensor_type {
 	LEGO_DEVICE_ID(MS_NXTCAM),				\
 	LEGO_DEVICE_ID(MS_PIXYADAPTER),				\
 	LEGO_DEVICE_ID(MI_CRUIZCORE_XG1300L),			\
-	LEGO_DEVICE_ID(DI_DGPS),				\
 	LEGO_DEVICE_ID(PX_PIXY),				\
+	LEGO_DEVICE_ID(DI_DGPS),				\
 	{ }
 
 extern struct i2c_driver nxt_i2c_sensor_driver;
