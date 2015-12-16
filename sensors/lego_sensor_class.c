@@ -419,7 +419,7 @@ static ssize_t value_show(struct device *dev, struct device_attribute *attr,
 		err = lego_sensor_default_scale(mode_info, index, &value);
 	if (err)
 		return err;
-
+	/* we don't handle here correctly LEGO_SENSOR_DATA_U32 and LEGO_SENSOR_DATA_FLOAT, to do  */
 	return sprintf(buf, "%ld\n", value);
 }
 
