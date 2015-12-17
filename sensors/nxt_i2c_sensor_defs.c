@@ -2902,7 +2902,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 	},
 	[DI_DGPS] = {
 		/**
-		 * [^ids]: Dexter Industries dGPS doesn't follow LEGO guidelines by
+		 * [^di_ids]: Dexter Industries dGPS doesn't follow LEGO guidelines by
 		 * returning vendor, product and firmware version values. As a
 		 * result, this sensor can't be automatically detected. Until
 		 * we find another way to identify the sensor, the driver has to
@@ -2918,8 +2918,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 		 * @vendor_part_name: dGPS for Lego Mindstorms NXT EV3
 		 * @vendor_website: http://www.dexterindustries.com/shop/dgps/
 		 * @default_address: 0x03
-		 * @vendor_id_footnote: [^ids]
-		 * @product_id_footnote: [^ids]
+		 * @vendor_id_footnote: [^di_ids]
+		 * @product_id_footnote: [^di_ids]
 		 */
 		.name		= DI_DGPS_NAME,
 		.vendor_id	= "dexind", /* The sensor doesn't return vendor_id, it can't be autodetected this way */
@@ -2928,15 +2928,19 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 		.mode_info	= (const struct lego_sensor_mode_info[]) {
 			[0] = {
 				/**
+				 * [^utc]: UTC to do
+				 *
+				 *
 				 * @description: Time in UTC
-				 * @value0: hhmmss
-				 * @units_description: hours, minutes, seconds
+				 * @value0: utc seconds
+				 * @units_description: hours, minutes, seconds?
+				 * @units_footnote: [^utc]
 				 */
 				.name		= "TIME",
 				.data_sets	= 1,
-				.data_type	= LEGO_SENSOR_DATA_U32,
-				.units		= "hms",
-				.decimals	= 0,
+				.data_type	= LEGO_SENSOR_DATA_S32_BE,
+				.units		= "utc",
+				.decimals	= 0,			
 			},
 			[1] = {
 				/**
@@ -2946,7 +2950,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 */
 				.name		= "STATUS",
 				.data_sets	= 1,
-				.data_type	= LEGO_SENSOR_DATA_U8,
+				.data_type	= LEGO_SENSOR_DATA_S8,
 				.decimals	= 0,
 				.units		= "0/1",
 			},
@@ -2962,7 +2966,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "LATITUDE",
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S32,
+				.data_type	= LEGO_SENSOR_DATA_S32_BE,
 				.decimals	= 0, //to do
 			},
 			[3] = {
@@ -2977,7 +2981,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "LONGITUDE",
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S32,
+				.data_type	= LEGO_SENSOR_DATA_S32_BE,
 				.decimals	= 0, //to do
 			},
 			[4] = {
@@ -2990,7 +2994,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "VELOCITY",
 				.data_sets	= 1,
 				.units		= "c/s",
-				.data_type	= LEGO_SENSOR_DATA_U32,
+				.data_type	= LEGO_SENSOR_DATA_S32_BE,
 				.decimals	= 0, //to check
 			},
 			[5] = {
@@ -3003,7 +3007,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "HEADING",
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_U16, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
 				.decimals	= 0, //to check!
 			},
 			[6] = {
@@ -3016,7 +3020,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "DST-DIST",
 				.data_sets	= 1,
 				.units		= "m",
-				.data_type	= LEGO_SENSOR_DATA_U32, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
 				.decimals	= 0, //to check!
 			},						
 			[7] = {
@@ -3029,7 +3033,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "DST-ANG",
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S16, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
 				.decimals	= 0, //to check!
 			},						
 			[8] = {
@@ -3044,7 +3048,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "TRV-ANG",
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S16, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
 				.decimals	= 0, //to check!
 			},						
 			[9] = {
@@ -3059,7 +3063,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.name		= "EXT-ALT",
 				.data_sets	= 1,
 				.units		= "m",
-				.data_type	= LEGO_SENSOR_DATA_S32, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
 				.decimals	= 0, //to check!
 			},						
 			[10] = {
@@ -3071,7 +3075,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 */
 				.name		= "EXT-HDOP",
 				.data_sets	= 1,				
-				.data_type	= LEGO_SENSOR_DATA_U32, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
 			},						
 			[11] = {
 				/**								  
@@ -3082,7 +3086,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 */
 				.name		= "EXT-SATS",
 				.data_sets	= 1,				
-				.data_type	= LEGO_SENSOR_DATA_U32, //to check!				
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!				
 			},						
 			
 		},
