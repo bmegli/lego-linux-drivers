@@ -2937,6 +2937,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_footnote: [^utc]
 				 */
 				.name		= "TIME",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,				
 				.data_sets	= 1,
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
 				.units		= "utc",
@@ -2949,6 +2953,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: no/yes
 				 */
 				.name		= "STATUS",
+				.raw_min = 0,
+				.raw_max = 1,
+				.si_min = 0,
+				.si_max = 1,				
 				.data_sets	= 1,
 				.data_type	= LEGO_SENSOR_DATA_S8,
 				.decimals	= 0,
@@ -2964,6 +2972,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_footnote: [^integer-latitude-units]
 				 */
 				.name		= "LATITUDE",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,				
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
@@ -2979,6 +2991,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_footnote: [^integer-longitude-units]				 	
 				 */
 				.name		= "LONGITUDE",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,				
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
@@ -2992,6 +3008,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: centimeters per second							 	
 				 */
 				.name		= "VELOCITY",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,				
 				.data_sets	= 1,
 				.units		= "c/s",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
@@ -3005,6 +3025,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: degrees							 	
 				 */
 				.name		= "HEADING",
+				.raw_min = SHRT_MIN,
+				.raw_max = SHRT_MAX,
+				.si_min = SHRT_MIN,
+				.si_max = SHRT_MAX,				
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
@@ -3018,6 +3042,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: meters					 	
 				 */
 				.name		= "DST-DIST",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,								
 				.data_sets	= 1,
 				.units		= "m",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
@@ -3031,6 +3059,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: degrees				 	
 				 */
 				.name		= "DST-ANG",
+				.raw_min = SHRT_MIN,
+				.raw_max = SHRT_MAX,
+				.si_min = SHRT_MIN,
+				.si_max = SHRT_MAX,								
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
@@ -3046,6 +3078,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_footnote: [^travelled-angle-units]			 	
 				 */
 				.name		= "TRV-ANG",
+				.raw_min = SHRT_MIN,
+				.raw_max = SHRT_MAX,
+				.si_min = SHRT_MIN,
+				.si_max = SHRT_MAX,								
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
@@ -3061,6 +3097,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: meters
 				 */
 				.name		= "EXT-ALT",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,												
 				.data_sets	= 1,
 				.units		= "m",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
@@ -3074,6 +3114,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @value0_footnote: [^extended-modes]			
 				 */
 				.name		= "EXT-HDOP",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,												
 				.data_sets	= 1,				
 				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
 			},						
@@ -3085,6 +3129,10 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @value0_footnote: [^extended-modes]			
 				 */
 				.name		= "EXT-SATS",
+				.raw_min = INT_MIN,
+				.raw_max = INT_MAX,
+				.si_min = INT_MIN,
+				.si_max = INT_MAX,												
 				.data_sets	= 1,				
 				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!				
 			},						
