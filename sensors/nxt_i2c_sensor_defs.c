@@ -248,6 +248,34 @@ static void mi_xg1300l_remove_cb(struct nxt_i2c_sensor_data *data)
 	}
 }
 
+/*
+ * Dexter Industries dGPS related functions
+ */
+
+ static void di_dgps_poll_cb(struct nxt_i2c_sensor_data *data)
+ {
+	const struct nxt_i2c_sensor_mode_info *i2c_mode_info =
+		&data->info->i2c_mode_info[data->sensor.mode];
+	struct lego_sensor_mode_info *mode_info =
+			&data->sensor.mode_info[data->sensor.mode];
+
+	/* In SPEED mode only 3 big endian bytes should be read  */
+	if(data->sensor.mode==4)
+	{
+		raw_data[0]=0;
+		i2c_smbus_read_i2c_block_data(data->client,
+			i2c_mode_info->read_data_reg,
+			3,
+			mode_info->raw_data+1);
+	}
+	else
+		i2c_smbus_read_i2c_block_data(data->client,
+			i2c_mode_info->read_data_reg,
+			lego_sensor_get_raw_data_size(mode_info),
+			mode_info->raw_data);		
+		
+ }
+
 /**
  * nxt_i2c_sensor_defs - Sensor definitions
  *
@@ -2925,15 +2953,17 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 		.vendor_id	= "dexind", /* The sensor doesn't return vendor_id, it can't be autodetected this way */
 		.product_id	= "dgps",  /* The sensor doesn't return product_id, it can't be autodetected this way */
 		.num_modes	= 12,
+		.ops		= &(const struct nxt_i2c_sensor_ops) {
+			.poll_cb	= di_dgps_poll_cb,
+		},		
 		.mode_info	= (const struct lego_sensor_mode_info[]) {
 			[0] = {
 				/**
-				 * [^utc]: UTC to do
-				 *
+				 * [^utc]: The UTC time is encoded in integer value as HHMMSS
 				 *
 				 * @description: Time in UTC
-				 * @value0: utc seconds
-				 * @units_description: hours, minutes, seconds?
+				 * @value0: hhmmss
+				 * @units_description: hhmmss
 				 * @units_footnote: [^utc]
 				 */
 				.name		= "TIME",
@@ -2943,8 +2973,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_max = INT_MAX,				
 				.data_sets	= 1,
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
-				.units		= "utc",
-				.decimals	= 0,			
+				.decimals	= 0,
+				.figures = 6,
 			},
 			[1] = {
 				/**
@@ -2971,7 +3001,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: integer degrees 
 				 * @units_footnote: [^integer-latitude-units]
 				 */
-				.name		= "LATITUDE",
+				.name		= "LAT",
 				.raw_min = INT_MIN,
 				.raw_max = INT_MAX,
 				.si_min = INT_MIN,
@@ -2979,7 +3009,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
-				.decimals	= 0, //to do
+				.decimals	= 6, 
+				.figures = 8,
 			},
 			[3] = {
 				/**
@@ -2990,7 +3021,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				 * @units_description: integer degrees 
 				 * @units_footnote: [^integer-longitude-units]				 	
 				 */
-				.name		= "LONGITUDE",
+				.name		= "LONG",
 				.raw_min = INT_MIN,
 				.raw_max = INT_MAX,
 				.si_min = INT_MIN,
@@ -2998,41 +3029,42 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.data_sets	= 1,
 				.units		= "deg",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
-				.decimals	= 0, //to do
+				.decimals	= 6, 
+				.figures = 9,
 			},
 			[4] = {
 				/**				
 				 *
-				 * @description: Velocity
-				 * @value0: Velocity
+				 * @description: Speed
+				 * @value0: Speed
 				 * @units_description: centimeters per second							 	
 				 */
-				.name		= "VELOCITY",
+				.name		= "SPEED",
 				.raw_min = INT_MIN,
 				.raw_max = INT_MAX,
 				.si_min = INT_MIN,
 				.si_max = INT_MAX,				
 				.data_sets	= 1,
-				.units		= "c/s",
+				.units		= "cm/s",
 				.data_type	= LEGO_SENSOR_DATA_S32_BE,
-				.decimals	= 0, //to check
+				.decimals	= 0, 
 			},
 			[5] = {
 				/**				
 				 *
-				 * @description: Heading
-				 * @value0: Heading (range to check)
+				 * @description: Heading angle
+				 * @value0: Heading angle (range to check)
 				 * @units_description: degrees							 	
 				 */
-				.name		= "HEADING",
+				.name		= "ANG",
 				.raw_min = SHRT_MIN,
 				.raw_max = SHRT_MAX,
 				.si_min = SHRT_MIN,
 				.si_max = SHRT_MAX,				
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
-				.decimals	= 0, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, 
+				.decimals	= 0,
 			},
 			[6] = {
 				/**				
@@ -3048,8 +3080,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_max = INT_MAX,								
 				.data_sets	= 1,
 				.units		= "m",
-				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
-				.decimals	= 0, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, 
+				.decimals	= 0, 
 			},						
 			[7] = {
 				/**				
@@ -3065,8 +3097,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_max = SHRT_MAX,								
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
-				.decimals	= 0, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, 
+				.decimals	= 0, 
 			},						
 			[8] = {
 				/**				
@@ -3084,8 +3116,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_max = SHRT_MAX,								
 				.data_sets	= 1,
 				.units		= "deg",
-				.data_type	= LEGO_SENSOR_DATA_S16_BE, //to check!
-				.decimals	= 0, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S16_BE, 
+				.decimals	= 0, 
 			},						
 			[9] = {
 				/**				
@@ -3103,8 +3135,8 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_max = INT_MAX,												
 				.data_sets	= 1,
 				.units		= "m",
-				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
-				.decimals	= 0, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, 
+				.decimals	= 0, 
 			},						
 			[10] = {
 				/**								  
@@ -3119,12 +3151,12 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_min = INT_MIN,
 				.si_max = INT_MAX,												
 				.data_sets	= 1,				
-				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, 
 			},						
 			[11] = {
 				/**								  
 				 * 
-				 * @description: Sattelites in Vew
+				 * @description: Satellites in Vew
 				 * @value0: sats in view (only in extended mode)
 				 * @value0_footnote: [^extended-modes]			
 				 */
@@ -3134,7 +3166,7 @@ const struct nxt_i2c_sensor_info nxt_i2c_sensor_defs[] = {
 				.si_min = INT_MIN,
 				.si_max = INT_MAX,												
 				.data_sets	= 1,				
-				.data_type	= LEGO_SENSOR_DATA_S32_BE, //to check!				
+				.data_type	= LEGO_SENSOR_DATA_S32_BE, 			
 			},						
 			
 		},
