@@ -262,7 +262,7 @@ static void mi_xg1300l_remove_cb(struct nxt_i2c_sensor_data *data)
 	/* In SPEED mode only 3 big endian bytes should be read  */
 	if(data->sensor.mode==4)
 	{
-		raw_data[0]=0;
+		mode_info->raw_data[0]=0;
 		i2c_smbus_read_i2c_block_data(data->client,
 			i2c_mode_info->read_data_reg,
 			3,
