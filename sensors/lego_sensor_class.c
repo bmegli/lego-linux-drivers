@@ -396,10 +396,10 @@ int lego_sensor_default_scale(struct lego_sensor_mode_info *mode_info, u8 index,
 
 	if (mode_info->raw_min != mode_info->si_min
 			|| mode_info->raw_max != mode_info->si_max) {
-		*value = (*value - mode_info->raw_min)
-			* (mode_info->si_max - mode_info->si_min)
-			/ (mode_info->raw_max - mode_info->raw_min)
-			+ mode_info->si_min;
+		s64 tmp = (s64)*value - mode_info->raw_min;
+		tmp *= (s64)mode_info->si_max - mode_info->si_min;
+		tmp=div64_s64(tmp, (s64)mode_info->raw_max - mode_info->raw_min);
+		*value=(s32)(tmp + mode_info->si_min);		
 	}
 
 	return 0;
