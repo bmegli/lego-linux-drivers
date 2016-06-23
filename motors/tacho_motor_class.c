@@ -1098,7 +1098,7 @@ static struct bin_attribute *tacho_motor_class_bin_attrs[] = {
 
 static const struct attribute_group tacho_motor_class_group = {
 	.attrs = tacho_motor_class_attrs,
-	.bin_attrs = tacho_motor_bin_attrs,
+	.bin_attrs = tacho_motor_class_bin_attrs,
 };
 
 /* Note - this group of attributes is only created for rotating motors */
