@@ -457,6 +457,36 @@ ssize_t position_store(struct device *dev, struct device_attribute *attr,
 	return size;
 }
 
+static ssize_t bin_position_read(struct file *file, struct kobject *kobj,
+			     struct bin_attribute *attr,
+			     char *buf, loff_t off, size_t count)
+{
+	struct device *dev = container_of(kobj, struct device, kobj);
+	struct tacho_motor_device *tm = to_tacho_motor(dev);
+	long position;
+	int err;
+
+	err = tm->ops->get_position(tm->context, &position);
+	if (err < 0)
+		return err;
+
+	if (tm->polarity == DC_MOTOR_POLARITY_INVERSED)
+		position *= -1;
+
+	size_t size = attr->size;
+	
+	if (off >= size || !count)
+		return 0;
+
+	size -= off;
+	
+	if (count < size)
+		size = count;
+	memcpy(buf + off, &position, size);
+
+	return size;
+}
+
 static ssize_t state_show(struct device *dev, struct device_attribute *attr,
 			  char *buf)
 {
@@ -1058,8 +1088,17 @@ static struct attribute *tacho_motor_class_attrs[] = {
 	NULL
 };
 
+static BIN_ATTR_RO(bin_position, sizeof(int));
+
+static struct bin_attribute *tacho_motor_class_bin_attrs[] = {
+	&bin_attr_bin_position,
+	NULL
+};
+
+
 static const struct attribute_group tacho_motor_class_group = {
 	.attrs = tacho_motor_class_attrs,
+	.bin_attrs = tacho_motor_bin_attrs,
 };
 
 /* Note - this group of attributes is only created for rotating motors */
