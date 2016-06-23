@@ -463,28 +463,22 @@ static ssize_t bin_position_read(struct file *file, struct kobject *kobj,
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct tacho_motor_device *tm = to_tacho_motor(dev);
-	long position;
-	int err;
+	int position, err;
 
+	if(count != attr->size || off != 0)
+		return -EINVAL;
+	
 	err = tm->ops->get_position(tm->context, &position);
+
 	if (err < 0)
 		return err;
 
 	if (tm->polarity == DC_MOTOR_POLARITY_INVERSED)
 		position *= -1;
-
-	size_t size = attr->size;
 	
-	if (off >= size || !count)
-		return 0;
+	memcpy(buf, &position, attr->size);
 
-	size -= off;
-	
-	if (count < size)
-		size = count;
-	memcpy(buf + off, &position, size);
-
-	return size;
+	return attr->size;
 }
 
 static ssize_t state_show(struct device *dev, struct device_attribute *attr,
@@ -581,6 +575,33 @@ static ssize_t speed_show(struct device *dev, struct device_attribute *attr,
 		speed *= -1;
 
 	return sprintf(buf, "%d\n", speed);
+}
+
+static ssize_t bin_speed_read(struct file *file, struct kobject *kobj,
+			     struct bin_attribute *attr,
+			     char *buf, loff_t off, size_t count)
+{
+	struct device *dev = container_of(kobj, struct device, kobj);
+	struct tacho_motor_device *tm = to_tacho_motor(dev);
+	int speed, err;
+
+	if(count != attr->size || off != 0)
+		return -EINVAL;
+	
+	if (!tm->ops->get_speed)
+		return -EOPNOTSUPP;
+
+	err = tm->ops->get_speed(tm->context, &speed);
+	
+	if (err < 0)
+		return err;
+
+	if (tm->polarity == DC_MOTOR_POLARITY_INVERSED)
+		speed *= -1;
+	
+	memcpy(buf, &speed, attr->size);
+
+	return attr->size;
 }
 
 static unsigned get_supported_commands(struct tacho_motor_device *tm)
@@ -1089,12 +1110,14 @@ static struct attribute *tacho_motor_class_attrs[] = {
 };
 
 static BIN_ATTR_RO(bin_position, sizeof(int));
+static BIN_ATTR_RO(bin_speed, sizeof(int));
+
 
 static struct bin_attribute *tacho_motor_class_bin_attrs[] = {
 	&bin_attr_bin_position,
+	&bin_attr_bin_speed,
 	NULL
 };
-
 
 static const struct attribute_group tacho_motor_class_group = {
 	.attrs = tacho_motor_class_attrs,
