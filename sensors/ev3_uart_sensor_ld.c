@@ -1033,10 +1033,10 @@ static void ev3_uart_receive_buf(struct tty_struct *tty,
 
 	if (port->closing)
 		return;
-	space = CIRC_SPACE(cb->head, cb->tail, EV3_UART_BUFFER_SIZE);
-	if (count > space) {
+	size = CIRC_SPACE(cb->head, cb->tail, EV3_UART_BUFFER_SIZE);
+	if (count > size) {
 		printk_ratelimited(KERN_ERR
-				   "%s: buffer overrun %d/%d\n", dev_name(tty->dev), count, space );
+				   "%s: buffer overrun %d/%d\n", dev_name(tty->dev), count, size );
 		schedule_work(&port->rx_data_work);
 		return;
 	}
