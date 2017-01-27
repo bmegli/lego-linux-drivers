@@ -76,7 +76,7 @@
 #endif
 
 /* EV3_UART_BUFFER_SIZE must be power of 2 for circ_buf macros */
-#define EV3_UART_BUFFER_SIZE		1024
+#define EV3_UART_BUFFER_SIZE		256
 #define EV3_UART_MAX_DATA_SIZE		32
 #define EV3_UART_MAX_MESSAGE_SIZE	(EV3_UART_MAX_DATA_SIZE + 2)
 
@@ -1033,10 +1033,10 @@ static void ev3_uart_receive_buf(struct tty_struct *tty,
 
 	if (port->closing)
 		return;
-
-	if (count > CIRC_SPACE(cb->head, cb->tail, EV3_UART_BUFFER_SIZE)) {
+	space = CIRC_SPACE(cb->head, cb->tail, EV3_UART_BUFFER_SIZE);
+	if (count > space) {
 		printk_ratelimited(KERN_ERR
-				   "%s: buffer overrun\n", dev_name(tty->dev));
+				   "%s: buffer overrun %d/%d\n", dev_name(tty->dev), count, space );
 		schedule_work(&port->rx_data_work);
 		return;
 	}
